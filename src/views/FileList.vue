@@ -67,7 +67,7 @@ export default {
             return this.info[el.path]['modTime']
         },
         toUpper() {
-            let upper = this.path.split('/').slice(1, -1).join('/')
+            let upper = this.path.split('/').slice(0, -1).join('/')
             this.$router.push({ 'path': `/s/${upper}` })
         },
     }
