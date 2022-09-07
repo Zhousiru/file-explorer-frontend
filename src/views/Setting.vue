@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  se
+  Setting Page
 </template>
 
 <style scoped>

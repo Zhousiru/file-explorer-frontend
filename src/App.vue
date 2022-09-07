@@ -21,7 +21,7 @@
 #container {
   background-color: rgb(255, 255, 255);
   width: 60%;
-  min-width: 40rem;
+  min-width: 50rem;
   max-width: 80rem;
   margin: 20vh auto 0;
 }
