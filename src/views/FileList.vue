@@ -9,12 +9,20 @@ export default {
             },
             info: {},
             editor: {
-                path: "",
-                value: ""
-            }
+                path: '',
+                new: '',
+                old: ''
+            },
+            error: {
+                rename: ''
+            },
+            hint: ''
         }
     },
     mounted() {
+        // get localStorage setting
+        this.addr = localStorage.addr
+
         this.init()
     },
     watch: {
@@ -32,9 +40,11 @@ export default {
             console.log('[INFO] Now at:', '/' + this.path)
 
             // get list
-            let r = await this.$axios.get(`http://127.0.0.1:2333/${this.path}?action=list`)
-            if (r.status != 200) {
-                console.error('[!ERR]', r.data)
+            let r = {}
+            try {
+                r = await this.$axios.get(`http://${this.addr}/${this.path}?action=list`)
+            } catch (e) {
+                this.showHint(e)
                 return
             }
 
@@ -51,9 +61,11 @@ export default {
 
             // get info
             tempList.forEach(async el => {
-                let r = await this.$axios.get(`http://127.0.0.1:2333/${el.path}?action=info`)
-                if (r.status != 200) {
-                    console.error('[!ERR]', r.data)
+                let r = {}
+                try {
+                    r = await this.$axios.get(`http://${this.addr}/${el.path}?action=info`)
+                } catch (e) {
+                    this.showHint(e)
                     return
                 }
                 this.info[el.path] = r.data.payload
@@ -64,7 +76,7 @@ export default {
             this.$router.push({ 'path': `/s/${el.path}` })
         },
         getFile(el) {
-            window.open(`http://127.0.0.1:2333/${el.path}?action=get`, '_blank')
+            window.open(`http://${this.addr}/${el.path}?action=get`, '_blank')
         },
         getModTime(el) {
             if (!this.info[el.path]) return
@@ -75,33 +87,43 @@ export default {
             this.$router.push({ 'path': `/s/${upper}` })
         },
         async del(el) {
-            let r = await this.$axios.get(`http://127.0.0.1:2333/${el.path}?action=del`)
-            if (r.status != 200) {
-                console.error('[!ERR]', r.data)
+            try {
+                await this.$axios.get(`http://${this.addr}/${el.path}?action=del`)
+            } catch (e) {
+                this.showHint(e)
                 return
             }
+
             console.log('[INFO] del', el.path)
             this.init()
         },
         openEditor(el) {
             this.editor.path = el.path
-            this.editor.value = el.name
+            this.editor.new = el.name
+            this.editor.old = el.name
         },
         async closeEditor() {
-            if (!this.editor.value) {
+            if (!this.editor.new || this.editor.new === this.editor.old) {
                 this.editor.path = ''
                 return
             }
 
-            let r = await this.$axios.get(`http://127.0.0.1:2333/${this.editor.path}?action=rename&new=${this.editor.value}`)
-            if (r.status != 200) {
-                console.error('[!ERR]', r.data)
+            try {
+                await this.$axios.get(`http://${this.addr}/${this.editor.path}?action=rename&new=${this.editor.new}`)
+            } catch (e) {
+                this.showHint(e)
                 return
             }
             console.log('[INFO] rename', this.editor.path)
 
             this.editor.path = ''
             this.init()
+        },
+        showHint(e) {
+            this.hint = e.response.data ? e.response.data.err : 'no connection'
+            setTimeout(() => {
+                this.hint = ''
+            }, 3000)
         }
     }
 }
@@ -109,14 +131,22 @@ export default {
 
 <template>
     <Teleport to="body">
-        <div class="modal" v-if="editor.path !== ''">
-            <div>请输入新文件名</div>
-            <input type="text" v-model="editor.value">
-            <button @click="closeEditor()">确定</button>
-        </div>
+        <Transition>
+            <div class="notice" v-if="hint">
+                {{ hint }}
+            </div>
+        </Transition>
+        <Transition>
+            <div class="modal" v-if="editor.path !== ''">
+                <div>请输入新文件名</div>
+                <input type="text" v-model="editor.new">
+                <div v-if="error.rename">文件名无效：{{ error.rename }}</div>
+                <button @click="closeEditor()">确定</button>
+            </div>
+        </Transition>
     </Teleport>
     <div class="bar">
-        <button :disabled="this.path === '/'" @click="toUpper()">
+        <button :disabled="!this.path" @click="toUpper()">
             <span class="mdi-set mdi-arrow-left"></span>
         </button>
         <div>{{ '/' + path }}</div>
@@ -124,7 +154,6 @@ export default {
     <div class="header">
         <div>标题</div>
         <div>修改时间</div>
-        <div></div>
     </div>
     <ol>
         <li v-for="el in list.folder" @click="navigate(el)">
@@ -261,29 +290,16 @@ li:hover .action {
     margin-top: 1rem;
 }
 
-.modal>input {
-    border: 2px var(--color-primary) solid;
-    font-size: 1.2rem;
-    padding: .4rem;
-    outline: none;
-    transition: all .2s;
-}
-
-.modal>input:focus {
-    border: 2px var(--color-plain) solid;
-}
-
-.modal>button {
-    display: block;
-    background-color: rgb(255, 255, 255);
-    padding: .4rem .8rem;
-    font-size: 1rem;
-    transition: all .2s;
-    border: 1px var(--color-plain) solid;
-}
-
-.modal>button:hover {
-    background-color: var(--color-primary);
-    cursor: pointer;
+.notice {
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translate(calc(50vw - 50%), calc(20vh - 50%));
+    z-index: 23333;
+    background-color: var(--color-error);
+    padding: 1rem;
+    box-shadow: 0 5px 4px 1px rgba(0, 0, 0, .05);
+    border: 2px rgba(0, 0, 0, .2) solid;
+    color: #fff;
 }
 </style>

@@ -1,6 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router"
 
-import Home from "./views/Home.vue"
 import Setting from "./views/Setting.vue"
 import FileList from "./views/FileList.vue"
 
@@ -10,16 +9,12 @@ const routes = [
         redirect: "/s"
     },
     {
-        path: "/s",
-        component: Home,
-        children: [{
-            path: ":path*",
-            component: FileList,
-        }]
+        path: "/s/:path*",
+        component: FileList
     },
     {
         path: "/setting",
-        component: Setting,
+        component: Setting
     }
 ]
 

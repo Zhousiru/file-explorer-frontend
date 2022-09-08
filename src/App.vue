@@ -24,6 +24,7 @@
   min-width: 50rem;
   max-width: 80rem;
   margin: 20vh auto 0;
+  min-height: 60vh;
 }
 
 .navbar {

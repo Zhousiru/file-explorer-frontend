@@ -2,6 +2,7 @@
   --color-background: rgb(233, 233, 233);
   --color-plain: rgb(109, 190, 165);
   --color-primary: rgb(234, 246, 242);
+  --color-error: rgb(236, 115, 78);
 }
 
 ::selection {
@@ -11,4 +12,41 @@
 body {
   margin: 0;
   background-color: var(--color-background);
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+
+
+input[type="text"] {
+  border: 2px var(--color-primary) solid;
+  font-size: 1.2rem;
+  padding: .4rem;
+  outline: none;
+  transition: all .2s;
+}
+
+input:focus {
+  border: 2px var(--color-plain) solid;
+}
+
+button {
+  display: block;
+  background-color: rgb(255, 255, 255);
+  padding: .4rem .8rem;
+  font-size: 1rem;
+  transition: all .2s;
+  border: 1px var(--color-plain) solid;
+}
+
+button:hover {
+  background-color: var(--color-primary);
+  cursor: pointer;
 }
