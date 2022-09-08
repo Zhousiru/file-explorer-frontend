@@ -22,7 +22,7 @@ export default {
     },
     mounted() {
         // get localStorage setting
-        if (!localStorage.addr){
+        if (!localStorage.addr) {
             this.addr = ''
         } else {
             this.addr = localStorage.addr
@@ -140,7 +140,7 @@ export default {
             }, 3000)
         },
         dragstart($event, el) {
-            $event.dataTransfer.setData('text/plain', el.path);
+            $event.dataTransfer.setData('text/plain', el.path)
             this.drag[el.path] = 'drag'
         },
         dragover($event, el) {
@@ -231,7 +231,6 @@ export default {
     background-color: transparent;
     transition: all .2s;
     padding: 1rem;
-    cursor: pointer;
 }
 
 .bar>button>span {

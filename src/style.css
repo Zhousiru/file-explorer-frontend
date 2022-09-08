@@ -46,7 +46,7 @@ button {
   border: 1px var(--color-plain) solid;
 }
 
-button:hover {
+button:not(:disabled):hover {
   background-color: var(--color-primary);
   cursor: pointer;
 }

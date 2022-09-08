@@ -1,6 +1,4 @@
 <script>
-import { def } from '@vue/shared';
-
 export default {
   data() {
     return {
