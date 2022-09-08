@@ -200,7 +200,7 @@ export default {
                 {{ el.name }}
             </div>
             <div class="mod-time">{{ getModTime(el) }}</div>
-            <div class="action">
+            <div class="action" v-if="el.path !== ''">
                 <a @click.stop="openEditor(el)">重命名</a>
                 <a @click.stop="del(el)">删除</a>
             </div>
