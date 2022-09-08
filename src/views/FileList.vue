@@ -8,6 +8,7 @@ export default {
                 folder: []
             },
             info: {},
+            drag: {}, // drag, drop
             editor: {
                 path: '',
                 new: '',
@@ -21,7 +22,11 @@ export default {
     },
     mounted() {
         // get localStorage setting
-        this.addr = localStorage.addr
+        if (!localStorage.addr){
+            this.addr = ''
+        } else {
+            this.addr = localStorage.addr
+        }
 
         this.init()
     },
@@ -37,7 +42,6 @@ export default {
             } else {
                 this.path = ''
             }
-            console.log('[INFO] Now at:', '/' + this.path)
 
             // get list
             let r = {}
@@ -56,7 +60,17 @@ export default {
                 if (el.isFolder) folderList.push(el)
                 else fileList.push(el)
             }
+
             this.list.file = fileList
+
+            if (this.path !== '') {
+                let upper = this.path.split('/').slice(0, -1).join('/')
+                folderList.unshift({
+                    'name': '..',
+                    'path': upper,
+                    'isFolder': true
+                })
+            }
             this.list.folder = folderList
 
             // get info
@@ -120,10 +134,31 @@ export default {
             this.init()
         },
         showHint(e) {
-            this.hint = e.response.data ? e.response.data.err : 'no connection'
+            this.hint = (e.response && e.response.data) ? e.response.data.err : 'no connection'
             setTimeout(() => {
                 this.hint = ''
             }, 3000)
+        },
+        dragstart($event, el) {
+            $event.dataTransfer.setData('text/plain', el.path);
+            this.drag[el.path] = 'drag'
+        },
+        dragover($event, el) {
+            if (this.drag[el.path] === 'drop') {
+                $event.preventDefault()
+            }
+        },
+        async drop($event, el) {
+            this.drag[el.path] = ''
+            let source = $event.dataTransfer.getData("text/plain")
+            let target = el.path ? el.path : '/'
+            try {
+                await this.$axios.get(`http://${this.addr}/${source}?action=move&new=${target}`)
+            } catch (e) {
+                this.showHint(e)
+                return
+            }
+            this.init()
         }
     }
 }
@@ -156,7 +191,10 @@ export default {
         <div>修改时间</div>
     </div>
     <ol>
-        <li v-for="el in list.folder" @click="navigate(el)">
+        <li v-for="el in list.folder" @click="navigate(el)" @dragstart="dragstart($event, el)"
+            @dragend="drag[el.path] = ''" @dragenter="drag[el.path] !== 'drag' ? drag[el.path] = 'drop' : undefined"
+            @dragleave="drag[el.path] === 'drop' ? drag[el.path] = '' : undefined" @dragover="dragover($event, el)"
+            @drop="drop($event, el)" :class="{'drop': drag[el.path] === 'drop'}" draggable="true">
             <div class="name">
                 <span class="mdi-set mdi-folder"></span>
                 {{ el.name }}
@@ -167,7 +205,8 @@ export default {
                 <a @click.stop="del(el)">删除</a>
             </div>
         </li>
-        <li v-for="el in list.file" @click="getFile(el)">
+        <li v-for="el in list.file" @click="getFile(el)" @dragstart="dragstart($event, el)"
+            @dragend="drag[el.path] = ''" draggable="true">
             <div class="name">
                 <span class="mdi-set mdi-file"></span>
                 {{ el.name }}
@@ -221,6 +260,10 @@ li {
     grid-template-columns: 8fr 2fr 1fr;
 }
 
+li>* {
+    pointer-events: none;
+}
+
 li>div {
     display: flex;
     align-items: center;
@@ -246,6 +289,10 @@ li {
 li:hover {
     background-color: rgba(0, 0, 0, 0.05);
     cursor: pointer;
+}
+
+li.drop {
+    box-shadow: 0 0 0 2px var(--color-plain);
 }
 
 .mod-time,
