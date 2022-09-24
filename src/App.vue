@@ -29,7 +29,7 @@ export default {
   width: 60%;
   min-width: 50rem;
   max-width: 80rem;
-  margin: 20vh auto 0;
+  margin: 20vh auto 20vh;
   min-height: 60vh;
   position: relative;
 }
@@ -56,9 +56,11 @@ export default {
   display: flex;
   align-items: center;
   padding: 0 1rem;
+  color: rgb(255, 255, 255);
 }
 
-.navbar>.menu>a:visited {
+.navbar>.menu>a:visited,
+.navbar>.menu>a:active {
   color: rgb(255, 255, 255);
 }
 

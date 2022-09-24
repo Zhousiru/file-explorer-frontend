@@ -363,6 +363,14 @@ li>div {
     align-items: center;
 }
 
+li>.name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block;
+    padding-right: 1rem;
+}
+
 li>.name>.mdi-set {
     color: var(--color-plain);
     margin-right: 1rem;
