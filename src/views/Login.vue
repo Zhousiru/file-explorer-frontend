@@ -10,7 +10,12 @@ export default {
   methods: {
     async save() {
       try {
-        let r = await this.$axios.get(`http://${this.addr}/?key=${this.key}&action=list`)
+        let r = await this.$axios.get(`//${this.addr}`, {
+          params: {
+            key: this.setting.key,
+            action: 'list'
+          }
+        })
       } catch (e) {
         if (e.code === "ERR_NETWORK") {
           this.showHint("can't connect to api server")

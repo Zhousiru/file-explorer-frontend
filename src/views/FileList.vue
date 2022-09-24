@@ -52,7 +52,12 @@ export default {
             // get list
             let r = {}
             try {
-                r = await this.$axios.get(`http://${this.setting.addr}/${this.path}?key=${this.setting.key}&action=list`)
+                r = await this.$axios.get(`//${this.setting.addr}/${encodeURIComponent(this.path)}`, {
+                    params: {
+                        key: this.setting.key,
+                        action: 'list'
+                    }
+                })
             } catch (e) {
                 this.showHint(e)
                 return
@@ -83,7 +88,12 @@ export default {
             tempList.forEach(async el => {
                 let r = {}
                 try {
-                    r = await this.$axios.get(`http://${this.setting.addr}/${el.path}?key=${this.setting.key}&action=info`)
+                    r = await this.$axios.get(`//${this.setting.addr}/${encodeURIComponent(el.path)}`, {
+                    params: {
+                        key: this.setting.key,
+                        action: 'info'
+                    }
+                })
                 } catch (e) {
                     this.showHint(e)
                     return
@@ -93,10 +103,10 @@ export default {
 
         },
         navigate(el) {
-            this.$router.push({ 'path': `/s/${el.path}` })
+            this.$router.push({ 'path': `/s/${encodeURIComponent(el.path)}` })
         },
         getFile(el) {
-            window.open(`http://${this.setting.addr}/${el.path}?key=${this.setting.key}&action=get`, '_blank')
+            window.open(`//${this.setting.addr}/${el.path}?key=${this.setting.key}&action=get`, '_blank')
         },
         getModTime(el) {
             if (!this.info[el.path]) return
@@ -104,11 +114,16 @@ export default {
         },
         toUpper() {
             let upper = this.path.split('/').slice(0, -1).join('/')
-            this.$router.push({ 'path': `/s/${upper}` })
+            this.$router.push({ 'path': `/s/${encodeURIComponent(upper)}` })
         },
         async del(el) {
             try {
-                await this.$axios.get(`http://${this.setting.addr}/${el.path}?key=${this.setting.key}&action=del`)
+                await this.$axios.get(`//${this.setting.addr}/${encodeURIComponent(el.path)}`, {
+                    params: {
+                        key: this.setting.key,
+                        action: 'del'
+                    }
+                })
             } catch (e) {
                 this.showHint(e)
                 return
@@ -141,7 +156,13 @@ export default {
 
             if (this.editor.method === 'rename') {
                 try {
-                    await this.$axios.get(`http://${this.setting.addr}/${this.editor.path}?key=${this.setting.key}&action=rename&new=${this.editor.new}`)
+                    await this.$axios.get(`//${this.setting.addr}/${encodeURIComponent(this.editor.path)}`, {
+                    params: {
+                        key: this.setting.key,
+                        new:this.editor.new,
+                        action: 'rename'
+                    }
+                })
                 } catch (e) {
                     this.showHint(e)
                     return
@@ -151,7 +172,13 @@ export default {
 
             if (this.editor.method === 'newFolder') {
                 try {
-                    await this.$axios.get(`http://${this.setting.addr}/${this.path}?key=${this.setting.key}&action=newFolder&name=${this.editor.new}`)
+                    await this.$axios.get(`//${this.setting.addr}/${encodeURIComponent(this.path)}`, {
+                    params: {
+                        key: this.setting.key,
+                        name: this.editor.new,
+                        action: 'newFolder'
+                    }
+                })
                 } catch (e) {
                     this.showHint(e)
                     return
@@ -185,7 +212,13 @@ export default {
             let source = $event.dataTransfer.getData("text/plain")
             let target = el.path ? el.path : '/'
             try {
-                await this.$axios.get(`http://${this.setting.addr}/${source}?key=${this.setting.key}&action=move&new=${target}`)
+                await this.$axios.get(`//${this.setting.addr}/${encodeURIComponent(source)}`, {
+                    params: {
+                        key: this.setting.key,
+                        new: target,
+                        action: 'move'
+                    }
+                })
             } catch (e) {
                 this.showHint(e)
                 return
@@ -202,7 +235,12 @@ export default {
             formData.append('file', file)
 
             try {
-                await this.$axios.post(`http://${this.setting.addr}/${this.path}?key=${this.setting.key}&action=upload`, formData)
+                await this.$axios.post(`//${this.setting.addr}/${encodeURIComponent(this.path)}`, formData, {
+                    params: {
+                        key: this.setting.key,
+                        action: 'upload'
+                    }
+                })
             } catch (e) {
                 this.showHint(e)
                 return
