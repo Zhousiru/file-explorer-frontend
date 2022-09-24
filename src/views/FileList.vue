@@ -89,11 +89,11 @@ export default {
                 let r = {}
                 try {
                     r = await this.$axios.get(`//${this.setting.addr}/${encodeURIComponent(el.path)}`, {
-                    params: {
-                        key: this.setting.key,
-                        action: 'info'
-                    }
-                })
+                        params: {
+                            key: this.setting.key,
+                            action: 'info'
+                        }
+                    })
                 } catch (e) {
                     this.showHint(e)
                     return
@@ -157,12 +157,12 @@ export default {
             if (this.editor.method === 'rename') {
                 try {
                     await this.$axios.get(`//${this.setting.addr}/${encodeURIComponent(this.editor.path)}`, {
-                    params: {
-                        key: this.setting.key,
-                        new:this.editor.new,
-                        action: 'rename'
-                    }
-                })
+                        params: {
+                            key: this.setting.key,
+                            new: this.editor.new,
+                            action: 'rename'
+                        }
+                    })
                 } catch (e) {
                     this.showHint(e)
                     return
@@ -173,12 +173,12 @@ export default {
             if (this.editor.method === 'newFolder') {
                 try {
                     await this.$axios.get(`//${this.setting.addr}/${encodeURIComponent(this.path)}`, {
-                    params: {
-                        key: this.setting.key,
-                        name: this.editor.new,
-                        action: 'newFolder'
-                    }
-                })
+                        params: {
+                            key: this.setting.key,
+                            name: this.editor.new,
+                            action: 'newFolder'
+                        }
+                    })
                 } catch (e) {
                     this.showHint(e)
                     return
@@ -381,6 +381,10 @@ export default {
     overflow: hidden;
     display: flex;
     flex-direction: row-reverse;
+}
+
+.path-area>div {
+    white-space: nowrap;
 }
 
 .header {
