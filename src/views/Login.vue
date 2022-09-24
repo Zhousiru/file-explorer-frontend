@@ -119,7 +119,6 @@ export default {
   border: none;
   background-color: var(--color-plain);
   color: #fff;
-  transition: all .2s;
 }
 
 .combine>button:hover {

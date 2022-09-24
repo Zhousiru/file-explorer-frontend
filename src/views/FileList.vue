@@ -164,6 +164,25 @@ export default {
                 return
             }
             this.init()
+        },
+        async upload() {
+            let file = this.$refs.upload.files[0]
+            if (!file) {
+                return
+            }
+
+            let formData = new FormData()
+            formData.append('file', file)
+
+            try {
+                await this.$axios.post(`http://${this.setting.addr}/${this.path}?key=${this.setting.key}&action=upload`, formData)
+            } catch (e) {
+                console.log(e)
+                this.showHint(e)
+                return
+            }
+
+            this.init()
         }
     }
 }
@@ -178,13 +197,23 @@ export default {
         </Transition>
         <Transition>
             <div class="modal" v-if="editor.path !== ''">
-                <div>请输入新文件名</div>
+                <div>请输入新文件（夹）名</div>
                 <input type="text" v-model="editor.new">
-                <div v-if="error.rename">文件名无效：{{ error.rename }}</div>
                 <button @click="closeEditor()">确定</button>
             </div>
         </Transition>
     </Teleport>
+    <div class="action-area">
+        <div class="new">
+            <input type="file" id="input" ref="upload" style="display: none;" @change="upload($event)" />
+            <button>
+                <span class="mdi-set mdi-folder-plus-outline"></span>
+            </button>
+            <button @click="$refs.upload.click()">
+                <span class="mdi-set mdi-cloud-upload"></span>
+            </button>
+        </div>
+    </div>
     <div class="bar">
         <button :disabled="!this.path" @click="toUpper()">
             <span class="mdi-set mdi-arrow-left"></span>
@@ -226,6 +255,41 @@ export default {
 </template>
 
 <style scoped>
+.action-area {
+    right: 0;
+    position: absolute;
+}
+
+.new {
+    top: 70vh;
+    position: fixed;
+    transform: translateX(calc(-100% - 2rem));
+    z-index: 2333;
+    display: flex;
+}
+
+.new>button {
+    border: none;
+    background-color: var(--color-plain);
+    color: #fff;
+    padding: 0;
+    font-size: 1.4rem;
+    width: 2.6rem;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .2);
+}
+
+.new>button:hover {
+    opacity: .8;
+}
+
+.new>button:not(:first-child) {
+    margin-left: 1rem;
+}
+
 .bar {
     background-color: var(--color-primary);
     display: flex;
