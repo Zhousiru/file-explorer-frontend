@@ -52,7 +52,7 @@ export default {
     </div>
   </Transition>
   <div class="content">
-    <div class="title">File Expolre</div>
+    <div class="title">File Explorer</div>
     <div class="form-field">
       <input type="text" v-model="addr" placeholder="API 地址">
       <div class="combine">
