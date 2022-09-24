@@ -12,7 +12,7 @@ export default {
       try {
         let r = await this.$axios.get(`//${this.addr}`, {
           params: {
-            key: this.setting.key,
+            key: this.key,
             action: 'list'
           }
         })
