@@ -16,7 +16,8 @@ export default {
             editor: {
                 path: '',
                 new: '',
-                old: ''
+                old: '',
+                method: ''
             },
             error: {
                 rename: ''
@@ -116,10 +117,21 @@ export default {
             console.log('[INFO] del', el.path)
             this.init()
         },
-        openEditor(el) {
-            this.editor.path = el.path
-            this.editor.new = el.name
-            this.editor.old = el.name
+        openEditor(el, method) {
+            this.editor.method = method
+            switch (method) {
+                case 'rename':
+                    this.editor.path = el.path
+                    this.editor.new = el.name
+                    this.editor.old = el.name
+                    break;
+
+                case 'newFolder':
+                    this.editor.path = '_placeholder' // set a placeholder to open modal
+                    this.editor.new = ''
+                    this.editor.old = ''
+                    break;
+            }
         },
         async closeEditor() {
             if (!this.editor.new || this.editor.new === this.editor.old) {
@@ -127,15 +139,30 @@ export default {
                 return
             }
 
-            try {
-                await this.$axios.get(`http://${this.setting.addr}/${this.editor.path}?key=${this.setting.key}&action=rename&new=${this.editor.new}`)
-            } catch (e) {
-                this.showHint(e)
-                return
+            if (this.editor.method === 'rename') {
+                try {
+                    await this.$axios.get(`http://${this.setting.addr}/${this.editor.path}?key=${this.setting.key}&action=rename&new=${this.editor.new}`)
+                } catch (e) {
+                    this.showHint(e)
+                    return
+                }
+                console.log('[INFO] rename', this.editor.path)
             }
-            console.log('[INFO] rename', this.editor.path)
+
+            if (this.editor.method === 'newFolder') {
+                try {
+                    await this.$axios.get(`http://${this.setting.addr}/${this.path}?key=${this.setting.key}&action=newFolder&name=${this.editor.new}`)
+                } catch (e) {
+                    this.showHint(e)
+                    return
+                }
+                console.log('[INFO] newFolder', this.editor.new)
+            }
 
             this.editor.path = ''
+            this.editor.new = ''
+            this.editor.old = ''
+            this.editor.method = ''
             this.init()
         },
         showHint(e) {
@@ -177,7 +204,6 @@ export default {
             try {
                 await this.$axios.post(`http://${this.setting.addr}/${this.path}?key=${this.setting.key}&action=upload`, formData)
             } catch (e) {
-                console.log(e)
                 this.showHint(e)
                 return
             }
@@ -206,7 +232,7 @@ export default {
     <div class="action-area">
         <div class="new">
             <input type="file" id="input" ref="upload" style="display: none;" @change="upload($event)" />
-            <button>
+            <button @click="openEditor(undefined, 'newFolder')">
                 <span class="mdi-set mdi-folder-plus-outline"></span>
             </button>
             <button @click="$refs.upload.click()">
@@ -235,7 +261,7 @@ export default {
             </div>
             <div class="mod-time">{{ getModTime(el) }}</div>
             <div class="action" v-if="el.path !== ''">
-                <a @click.stop="openEditor(el)">重命名</a>
+                <a @click.stop="openEditor(el, 'rename')">重命名</a>
                 <a @click.stop="del(el)">删除</a>
             </div>
         </li>
@@ -247,7 +273,7 @@ export default {
             </div>
             <div class="mod-time">{{ getModTime(el) }}</div>
             <div class="action">
-                <a @click.stop="openEditor(el)">重命名</a>
+                <a @click.stop="openEditor(el, 'rename')">重命名</a>
                 <a @click.stop="del(el)">删除</a>
             </div>
         </li>
