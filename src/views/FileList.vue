@@ -106,7 +106,7 @@ export default {
             this.$router.push({ 'path': `/s/${encodeURIComponent(el.path)}` })
         },
         getFile(el) {
-            window.open(`//${this.setting.addr}/${el.path}?key=${this.setting.key}&action=get`, '_blank')
+            window.open(`//${this.setting.addr}/${encodeURIComponent(el.path)}?key=${encodeURIComponent(this.setting.key)}&action=get`, '_blank')
         },
         getModTime(el) {
             if (!this.info[el.path]) return
