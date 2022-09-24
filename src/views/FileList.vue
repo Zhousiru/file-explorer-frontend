@@ -299,8 +299,8 @@ export default {
                 <span class="mdi-set mdi-folder"></span>
                 {{ el.name }}
             </div>
-            <div class="mod-time">{{ getModTime(el) }}</div>
-            <div class="action" v-if="el.path !== ''">
+            <div class="mod-time" v-if="el.name !== '..'">{{ getModTime(el) }}</div>
+            <div class="action" v-if="el.name !== '..'">
                 <a @click.stop="openEditor(el, 'rename')">重命名</a>
                 <a @click.stop="del(el)">删除</a>
             </div>
