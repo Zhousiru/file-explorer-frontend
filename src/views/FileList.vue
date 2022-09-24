@@ -244,7 +244,9 @@ export default {
         <button :disabled="!this.path" @click="toUpper()">
             <span class="mdi-set mdi-arrow-left"></span>
         </button>
-        <div>{{ '/' + path }}</div>
+        <div class="path-area">
+            <div>{{ '/' + path }}</div>
+        </div>
     </div>
     <div class="header">
         <div>标题</div>
@@ -336,8 +338,11 @@ export default {
     background-color: rgba(0, 0, 0, 0.05)
 }
 
-.bar>div {
-    padding: 1rem 1.4rem;
+.path-area {
+    margin: 1rem 1.4rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row-reverse;
 }
 
 .header {
