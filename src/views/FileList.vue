@@ -2,6 +2,10 @@
 export default {
     data() {
         return {
+            setting: {
+                addr: '',
+                key: ''
+            },
             path: '',
             list: {
                 file: [],
@@ -22,10 +26,11 @@ export default {
     },
     mounted() {
         // get localStorage setting
-        if (!localStorage.addr) {
-            this.addr = ''
-        } else {
-            this.addr = localStorage.addr
+        this.setting.addr = localStorage.getItem('addr')
+        this.setting.key = localStorage.getItem('key')
+
+        if (!this.setting.addr) {
+            this.$router.push({ 'path': `/login` })
         }
 
         this.init()
@@ -46,7 +51,7 @@ export default {
             // get list
             let r = {}
             try {
-                r = await this.$axios.get(`http://${this.addr}/${this.path}?action=list`)
+                r = await this.$axios.get(`http://${this.setting.addr}/${this.path}?key=${this.setting.key}&action=list`)
             } catch (e) {
                 this.showHint(e)
                 return
@@ -77,7 +82,7 @@ export default {
             tempList.forEach(async el => {
                 let r = {}
                 try {
-                    r = await this.$axios.get(`http://${this.addr}/${el.path}?action=info`)
+                    r = await this.$axios.get(`http://${this.setting.addr}/${el.path}?key=${this.setting.key}&action=info`)
                 } catch (e) {
                     this.showHint(e)
                     return
@@ -90,7 +95,7 @@ export default {
             this.$router.push({ 'path': `/s/${el.path}` })
         },
         getFile(el) {
-            window.open(`http://${this.addr}/${el.path}?action=get`, '_blank')
+            window.open(`http://${this.setting.addr}/${el.path}?key=${this.setting.key}&action=get`, '_blank')
         },
         getModTime(el) {
             if (!this.info[el.path]) return
@@ -102,7 +107,7 @@ export default {
         },
         async del(el) {
             try {
-                await this.$axios.get(`http://${this.addr}/${el.path}?action=del`)
+                await this.$axios.get(`http://${this.setting.addr}/${el.path}?key=${this.setting.key}&action=del`)
             } catch (e) {
                 this.showHint(e)
                 return
@@ -123,7 +128,7 @@ export default {
             }
 
             try {
-                await this.$axios.get(`http://${this.addr}/${this.editor.path}?action=rename&new=${this.editor.new}`)
+                await this.$axios.get(`http://${this.setting.addr}/${this.editor.path}?key=${this.setting.key}&action=rename&new=${this.editor.new}`)
             } catch (e) {
                 this.showHint(e)
                 return
@@ -153,7 +158,7 @@ export default {
             let source = $event.dataTransfer.getData("text/plain")
             let target = el.path ? el.path : '/'
             try {
-                await this.$axios.get(`http://${this.addr}/${source}?action=move&new=${target}`)
+                await this.$axios.get(`http://${this.setting.addr}/${source}?key=${this.setting.key}&action=move&new=${target}`)
             } catch (e) {
                 this.showHint(e)
                 return
@@ -334,18 +339,5 @@ li:hover .action {
 
 .modal>*:not(:first-child) {
     margin-top: 1rem;
-}
-
-.notice {
-    position: fixed;
-    top: 0;
-    left: 0;
-    transform: translate(calc(50vw - 50%), calc(20vh - 50%));
-    z-index: 23333;
-    background-color: var(--color-error);
-    padding: 1rem;
-    box-shadow: 0 5px 4px 1px rgba(0, 0, 0, .05);
-    border: 2px rgba(0, 0, 0, .2) solid;
-    color: #fff;
 }
 </style>

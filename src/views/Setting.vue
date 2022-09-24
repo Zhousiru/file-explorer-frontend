@@ -3,17 +3,19 @@ export default {
   data() {
     return {
       addr: '',
-      hint: ''
+      key: ''
     }
   },
   methods: {
     save() {
-      localStorage.addr = this.addr
+      localStorage.setItem('addr', this.addr)
+      localStorage.setItem('key', this.key)
       this.$router.push({ path: '/s' })
     }
   },
   mounted() {
-    this.addr = localStorage.addr
+    this.addr = localStorage.getItem('addr')
+    this.key = localStorage.getItem('key')
   }
 }
 </script>
@@ -22,7 +24,9 @@ export default {
   <div class="content">
     <div>API 地址</div>
     <input type="text" v-model="addr">
-    <button @click="save">{{ hint ? hint : '保存' }}</button>
+    <div>Key</div>
+    <input type="text" v-model="key">
+    <button @click="save">保存</button>
   </div>
 </template>
 

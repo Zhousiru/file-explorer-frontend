@@ -1,5 +1,11 @@
 <script>
-
+export default {
+  data() {
+    return {
+      showNav: true
+    }
+  }
+}
 </script>
 
 <template>
@@ -25,6 +31,7 @@
   max-width: 80rem;
   margin: 20vh auto 0;
   min-height: 60vh;
+  position: relative;
 }
 
 .navbar {
