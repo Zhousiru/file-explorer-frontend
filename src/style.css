@@ -31,8 +31,6 @@ input[type="text"] {
   outline: none;
   transition: all 0.2s;
   box-sizing: border-box;
-  /* for safari */
-  border-radius: 0; 
 }
 
 input:focus {
@@ -48,6 +46,18 @@ button {
   border: 1px var(--color-plain) solid;
 }
 
+/* for safari */
+input {
+  border-radius: 0;
+}
+button {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+button:disabled {
+  color: rgba(0, 0, 0, 0.2);
+}
+
 button:not(:disabled):hover {
   background-color: var(--color-primary);
   cursor: pointer;
@@ -61,7 +71,7 @@ button:not(:disabled):hover {
   z-index: 23333;
   background-color: var(--color-error);
   padding: 1rem;
-  box-shadow: 0 5px 4px 1px rgba(0, 0, 0, .05);
-  border: 2px rgba(0, 0, 0, .2) solid;
+  box-shadow: 0 5px 4px 1px rgba(0, 0, 0, 0.05);
+  border: 2px rgba(0, 0, 0, 0.2) solid;
   color: #fff;
 }
