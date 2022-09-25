@@ -227,6 +227,7 @@ export default {
         },
         async upload() {
             let file = this.$refs.upload.files[0]
+            this.$refs.upload.value = null
             if (!file) {
                 return
             }
